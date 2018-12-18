@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 114556472626209196}
   - component: {fileID: 58447638928659588}
   - component: {fileID: 50563740123150516}
-  - component: {fileID: 2279579973682420475}
+  - component: {fileID: 4043257561666032368}
   m_Layer: 9
   m_Name: enemy
   m_TagString: Untagged
@@ -28,9 +28,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1151089418441094}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.0499997, y: 0.27000004, z: 0}
-  m_LocalScale: {x: 0.642, y: 0.642, z: 0.642}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_Children:
   - {fileID: 369952667786095057}
   m_Father: {fileID: 0}
@@ -73,12 +73,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: d5c3a59a0bb2c9545b666385629eda1c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bc59861df447597409fc184cd78f166a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.2, y: 2.2}
+  m_Size: {x: 9, y: 9}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -120,7 +120,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 1.4
+  m_Radius: 2
 --- !u!50 &50563740123150516
 Rigidbody2D:
   serializedVersion: 4
@@ -142,23 +142,25 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!111 &2279579973682420475
-Animation:
+--- !u!95 &4043257561666032368
+Animator:
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1151089418441094}
   m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 9407da3e0d07814429c0a2759d02482a, type: 2}
-  m_Animations:
-  - {fileID: 7400000, guid: 9407da3e0d07814429c0a2759d02482a, type: 2}
-  - {fileID: 7400000, guid: e4182d0cd28e58545822638bdd36c016, type: 2}
-  m_WrapMode: 0
-  m_PlayAutomatically: 0
-  m_AnimatePhysics: 0
-  m_CullingType: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: dc5b94736390b2b478439bd284257784, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3288477506356439562
 GameObject:
   m_ObjectHideFlags: 0

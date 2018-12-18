@@ -28,9 +28,14 @@ public class Enemy : MonoBehaviour
 
     private Collider2D _collider;
 
+    private Animator _animator;
+
+    private bool isAlive = true;
+
     private void Awake()
     {
         planes = GeometryUtility.CalculateFrustumPlanes(Camera.main);
+        _animator = GetComponent<Animator>();
         _collider = GetComponent<Collider2D>();
         enemyParticleSystem = transform.parent.GetComponentInChildren<ParticleSystem>();
     }
@@ -44,11 +49,13 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         transform.Translate(Vector2.left * Time.deltaTime * currentSpeed);
-        if (currentHealth <= 0)
+        if (currentHealth <= 0 && isAlive)
         {
+            isAlive = false;
             enemyParticleSystem.transform.position = transform.position;
             enemyParticleSystem.Play();
             FindObjectOfType<Player>().AddSouls(maxHealth * 2);
+            _animator.SetBool("dead", true);
             Destroy(gameObject);
         }
     }
@@ -73,10 +80,11 @@ public class Enemy : MonoBehaviour
         while (currentHealth > 0)
         {
             player.TakeDamage(atk);
-            if (GetComponent<Animation>() != null && this != null)
-                GetComponent<Animation>().Play("attack");
-            yield return new WaitForSeconds(0.4f);
+            if (_animator != null && this != null)
+                _animator.Play("enemy_attack");
+            yield return new WaitForSeconds(0.2f);
             EZCameraShake.CameraShaker.Instance.Shake(EZCameraShake.CameraShakePresets.Bump);
+            TakeReturnDamage();
             yield return new WaitForSeconds(atakSpeed);
             yield return null;
         }
@@ -100,13 +108,32 @@ public class Enemy : MonoBehaviour
         else
             currentHealth--;
 
-        if (GetComponent<Animation>() != null && this != null)
-            GetComponent<Animation>().PlayQueued("takeDamage");
+        if (_animator != null && this != null)
+            _animator.SetTrigger("hurt");
         if (!isPriority)
             transform.position -= (Vector3)Vector2.left * currentSpeed * Time.deltaTime * 2;
 
         if (currentSpeed != 0)
             currentSpeed = Mathf.Clamp(currentSpeed * (currentHealth / maxHealth), baseSpeed / 2, baseSpeed);
+    }
+
+    public void TakeReturnDamage()
+    {
+        var dmg = FindObjectOfType<Player>().def;
+        var incomingDmg = dmg - def;
+        if (incomingDmg > 0)
+            currentHealth -= incomingDmg;
+        else
+            currentHealth--;
+
+        if (_animator != null && this != null)
+            _animator.SetTrigger("hurt");
+        if (!isPriority)
+            transform.position -= (Vector3)Vector2.left * currentSpeed * Time.deltaTime * 2;
+
+        if (currentSpeed != 0)
+            currentSpeed = Mathf.Clamp(currentSpeed * (currentHealth / maxHealth), baseSpeed / 2, baseSpeed);
+
     }
 
     public void TakeDamage(int dmg)
