@@ -34,6 +34,8 @@ public class Player : MonoBehaviour
     public int enemiesKilled = 0;
     public GameObject enemiesText;
 
+    public Material shieldMaterial;
+
     private void Start()
     {
         currentHealth = maxHealth;
@@ -42,13 +44,20 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        var shield = transform.GetChild(0).GetComponent<ParticleSystem>().main;
+        var shield = transform.GetChild(0);
         float val = (float)currentHealth / (float)maxHealth;
         if (val <= 0)
             SceneManager.LoadScene(0);
-        var colorAux = shield.startColor.color;
-        colorAux.a = val;
-        shield.startColor = colorAux;
+
+        var current = shieldMaterial.GetFloat("_FresnelWidth");
+        if (val < 0.5f)
+        {
+            shieldMaterial.SetFloat("_FresnelWidth", Mathf.Clamp(val * 3, 0.3f, 1));
+        }
+        else
+        {
+            shieldMaterial.SetFloat("_FresnelWidth", Mathf.Clamp(1 + val, 1, 2));
+        }
     }
 
     public void TakeDamage(int incomingDmg)

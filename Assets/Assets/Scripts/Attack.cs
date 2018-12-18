@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Attack : MonoBehaviour
@@ -43,8 +44,12 @@ public class Attack : MonoBehaviour
         if (currentSingleAtackTime >= player.singleAtackSpeed && enemyPresent)
         {
             currentTarget = ChooseTarget(enemies);
+            //Atire !
             if (currentTarget != null)
-                Shot(currentTarget);
+            {
+                //Shot(currentTarget);
+                GetComponent<Animator>().SetTrigger("attack");
+            }
             currentSingleAtackTime = 0;
         }
         else
@@ -145,10 +150,10 @@ public class Attack : MonoBehaviour
         }
     }
 
-    public void Shot(Enemy enemy)
+    public void Shot()//(Enemy enemy)
     {
         var shot = Instantiate(projectile, transform.GetChild(0).position, transform.rotation, projectilesParent).GetComponent<Projectile>();
-        shot.StartCoroutine(shot.ToEnemy(enemy));
+        shot.StartCoroutine(shot.ToEnemy(currentTarget));
     }
 
     public void DamageAllVisibleEnemies()

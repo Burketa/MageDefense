@@ -55,10 +55,10 @@ public class Enemy : MonoBehaviour
 
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        var colliderName = collision.collider.name;
-        if (colliderName.Equals("fall"))
+        var colliderTag = collision.collider.tag;
+        if (colliderTag.Equals("AreaAttack"))
             TakeDamage();
-        if (colliderName.Equals("shield"))
+        if (colliderTag.Equals("Shield"))
         {
             currentSpeed = 0;
             isPriority = true;

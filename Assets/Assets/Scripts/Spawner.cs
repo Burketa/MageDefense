@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
+    public bool canSpawn = true;
     public GameObject enemyPrefab;
 
     public float spawnTime = 1f;
@@ -25,25 +26,28 @@ public class Spawner : MonoBehaviour
 
     void Update()
     {
-        if (currentSpawnTime >= spawnTime)
+        if (canSpawn)
         {
-            var enemyInst = Instantiate(enemyPrefab, transform.position + new Vector3(Random.Range(-1, 1), Random.Range(-3, 3), 0), transform.rotation, transform);
-            var enemy = enemyInst.GetComponent<Enemy>();
+            if (currentSpawnTime >= spawnTime)
+            {
+                var enemyInst = Instantiate(enemyPrefab, transform.position + new Vector3(Random.Range(-1, 1), Random.Range(-3, 3), 0), transform.rotation, transform);
+                var enemy = enemyInst.GetComponent<Enemy>();
 
-            //Adiciona a barra de vida
-            FindObjectOfType<UI>().AddHealthbar(enemy);
+                //Adiciona a barra de vida
+                FindObjectOfType<UI>().AddHealthbar(enemy);
 
-            spawned++;
+                spawned++;
 
-            UpgradeEnemy(enemy);
+                UpgradeEnemy(enemy);
 
-            if (Random.value > 0.3f)
-                spawnTime *= 1f - 0.005f;
-            spawnTime = Mathf.Clamp(spawnTime, 0.3f, 3f);
-            currentSpawnTime = 0;
+                if (Random.value > 0.3f)
+                    spawnTime *= 1f - 0.005f;
+                spawnTime = Mathf.Clamp(spawnTime, 0.3f, 3f);
+                currentSpawnTime = 0;
+            }
+            else
+                currentSpawnTime += Time.deltaTime;
         }
-        else
-            currentSpawnTime += Time.deltaTime;
     }
 
     public void UpgradeEnemy(Enemy enemy)
