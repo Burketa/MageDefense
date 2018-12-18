@@ -82,7 +82,7 @@ public class Attack : MonoBehaviour
         var dmg = FindObjectOfType<Player>().atk;
 
         //Se esse for o primeiro tiro...
-        if (projectilesParent.childCount == 0)
+        if (projectilesParent.childCount == 1)
         {
             //Checa todos os inimigos e ve se algum é prioridade, se for, retorne-o
             foreach (Enemy enemy in enemies)
@@ -104,8 +104,11 @@ public class Attack : MonoBehaviour
             foreach (Transform projectile in projectilesParent)
             {
                 var projectileProjectile = projectile.GetComponent<Projectile>();
-                if (projectileProjectile.enemy == currentTarget)
-                    incomingDamage += currentTarget.def - dmg;
+                if (projectileProjectile)
+                {
+                    if (projectileProjectile.enemy == currentTarget)
+                        incomingDamage += currentTarget.def - dmg;
+                }
             }
             //Se o dano total a ser desferido no inimigo for negativo ou nulo, de o dano minimo
             if (incomingDamage >= 0)

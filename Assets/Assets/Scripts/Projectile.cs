@@ -4,49 +4,71 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-
     public float speed = 1f;
-    public float rotationSpeed = 1f;
+
     public Enemy enemy;
+
+    //private ParticleSystem projectileParticleSystem;
 
     public IEnumerator ToEnemy(Enemy enemy)
     {
         this.enemy = enemy;
 
-        while (true)
+        while (enemy)
         {
-            //Se o inimigo original ainda estiver vivo
-            if (enemy)
+            var dir = (enemy.transform.position - transform.position).normalized;
+            dir.z = 0;
+
+            transform.Translate(transform.right * speed * Time.deltaTime);
+            transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
+
+            var objHit = Physics2D.OverlapCircleAll(transform.position, 0.1f);
+
+            if (objHit.Length > 0)
             {
-                var hits = Physics2D.OverlapCircleAll(transform.position, 0.1f);
-                var dir = (enemy.transform.position - transform.position).normalized;
-                dir.z = 0;
-
-                transform.Translate(transform.right * speed * Time.deltaTime);
-                transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
-
-                if (hits.Length > 0)
+                foreach (Collider2D hit in objHit)
                 {
-                    foreach (Collider2D hit in hits)
+                    var enemyHit = hit.GetComponent<Enemy>();
+                    if (enemyHit != null)
                     {
-                        var enemyHit = hit.GetComponent<Enemy>();
-                        if (enemyHit != null)
+                        if (enemyHit.Equals(enemy))
                         {
-                            if (enemyHit.Equals(enemy))
-                            {
-                                enemy.TakeDamage();
-                                Destroy(gameObject);
-                            }
+                            enemy.TakeDamage();
+                            AreaDamage(enemy);
+                            Destroy(gameObject);
                         }
                     }
                 }
-
-            }
-            else
-            {
-                Destroy(gameObject);
             }
             yield return null;
         }
+        Destroy(gameObject);
     }
+
+    public void AreaDamage(Enemy mainTarget)
+    {
+        var radius = FindObjectOfType<Player>().atkRadius;
+
+        var areaHit = Physics2D.OverlapCircleAll(transform.position, radius);
+
+        foreach (Collider2D enemyHit in areaHit)
+        {
+            var enemy = enemyHit.GetComponent<Enemy>();
+            if (enemy != null && enemy != mainTarget)
+            {
+                enemy.TakeDamage();
+            }
+        }
+
+        var projectileParticleSystem = transform.parent.GetComponentInChildren<ParticleSystem>();
+        projectileParticleSystem.transform.position = transform.position;
+        projectileParticleSystem.Play();
+    }
+
+    // void OnDrawGizmos()
+    // {
+    // Draw a yellow sphere at the transform's position
+    // Gizmos.color = Color.red;
+    //Gizmos.DrawSphere(transform.position, areaRadius);
+    //}
 }

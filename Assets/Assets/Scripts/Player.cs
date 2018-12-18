@@ -6,7 +6,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public int baseCost = 10;
-    
+
     public int cost;
 
     public int costMultiplier = 1;
@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     public int atk;
     public float singleAtackSpeed = 1f;
     public float multipleAttackSpeed = 3f;
+    public float atkRadius = 1f;
 
     [Header("Defense")]
     public int def;
@@ -25,7 +26,7 @@ public class Player : MonoBehaviour
     [Space]
     public float healSpeed = 1f;
     public int healAmmount = 1;
-    
+
     public int souls = 0;
     public GameObject soulsText;
 
@@ -53,8 +54,10 @@ public class Player : MonoBehaviour
     public void TakeDamage(int incomingDmg)
     {
         var dmg = incomingDmg - def;
-        if (dmg <= 0)
+        if (dmg == 0)
             dmg = 1;
+        else if (dmg < 0)
+            dmg = 0;
         currentHealth -= dmg;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
     }
@@ -102,7 +105,7 @@ public class Player : MonoBehaviour
         soulsText.GetComponent<TMPro.TextMeshProUGUI>().text = souls.ToString();
         enemiesText.GetComponent<TMPro.TextMeshProUGUI>().text = enemiesKilled.ToString();
     }
-    
+
     public void AdjustCost()
     {
         costMultiplier++;

@@ -24,10 +24,20 @@ public class Enemy : MonoBehaviour
 
     public bool incomingDamageIsEnoughToKill = false;
 
+    private Plane[] planes;
+
+    private Collider2D _collider;
+
+    private void Awake()
+    {
+        planes = GeometryUtility.CalculateFrustumPlanes(Camera.main);
+        _collider = GetComponent<Collider2D>();
+        enemyParticleSystem = transform.parent.GetComponentInChildren<ParticleSystem>();
+    }
+
     private void Start()
     {
         currentHealth = maxHealth;
-        enemyParticleSystem = transform.parent.GetComponentInChildren<ParticleSystem>();
         currentSpeed = baseSpeed;
     }
 
@@ -38,7 +48,7 @@ public class Enemy : MonoBehaviour
         {
             enemyParticleSystem.transform.position = transform.position;
             enemyParticleSystem.Play();
-            FindObjectOfType<Player>().AddSouls(maxHealth);
+            FindObjectOfType<Player>().AddSouls(maxHealth * 2);
             Destroy(gameObject);
         }
     }
@@ -57,7 +67,7 @@ public class Enemy : MonoBehaviour
     }
 
     //TODO: metodo para dar dano na barreira, na barreira !.
-    public IEnumerator DoDamage() 
+    public IEnumerator DoDamage()
     {
         var player = FindObjectOfType<Player>();
         while (currentHealth > 0)
@@ -74,7 +84,11 @@ public class Enemy : MonoBehaviour
 
     public bool isVisible()
     {
-        return GetComponent<Renderer>().isVisible;
+        //return GetComponent<Renderer>().isVisible;
+        if (GeometryUtility.TestPlanesAABB(planes, _collider.bounds))
+            return true;
+        else
+            return false;
     }
 
     public void TakeDamage()
@@ -87,7 +101,7 @@ public class Enemy : MonoBehaviour
             currentHealth--;
 
         if (GetComponent<Animation>() != null && this != null)
-            GetComponent<Animation>().Play("takeDamage");
+            GetComponent<Animation>().PlayQueued("takeDamage");
         if (!isPriority)
             transform.position -= (Vector3)Vector2.left * currentSpeed * Time.deltaTime * 2;
 

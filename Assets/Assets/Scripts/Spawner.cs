@@ -30,6 +30,9 @@ public class Spawner : MonoBehaviour
             var enemyInst = Instantiate(enemyPrefab, transform.position + new Vector3(Random.Range(-1, 1), Random.Range(-3, 3), 0), transform.rotation, transform);
             var enemy = enemyInst.GetComponent<Enemy>();
 
+            //Adiciona a barra de vida
+            FindObjectOfType<UI>().AddHealthbar(enemy);
+
             spawned++;
 
             UpgradeEnemy(enemy);
@@ -45,11 +48,12 @@ public class Spawner : MonoBehaviour
 
     public void UpgradeEnemy(Enemy enemy)
     {
-        if (spawned > Random.Range(5, 7) * multiplier)
+        if (spawned > Random.Range(8, 12) * multiplier)
             multiplier++;
-        enemy.atk *= multiplier;
-        enemy.def *= multiplier;
+        enemy.atk *= Mathf.FloorToInt(multiplier * 0.5f);
+        enemy.def *= Mathf.FloorToInt(multiplier * 0.5f);
         enemy.maxHealth *= Mathf.FloorToInt(multiplier * 0.5f);
+        enemy.maxHealth = Mathf.Clamp(enemy.maxHealth, 1, enemy.maxHealth);
         enemy.currentHealth = enemy.maxHealth;
     }
 }
