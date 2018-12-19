@@ -79,6 +79,7 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(int incomingDmg)
     {
+        Sound.instance.Play("shield_defense");
         var dmg = incomingDmg - def;
         if (dmg == 0)
             dmg = 1;

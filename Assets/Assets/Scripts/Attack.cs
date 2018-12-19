@@ -166,6 +166,7 @@ public class Attack : MonoBehaviour
 
     public void Shot()//(Enemy enemy)
     {
+        Sound.instance.Play("player_attack");
         var shot = Instantiate(projectile, castPoint.position, transform.rotation, projectilesParent).GetComponent<Projectile>();
         shot.StartCoroutine(shot.ToEnemy(currentTarget));
     }

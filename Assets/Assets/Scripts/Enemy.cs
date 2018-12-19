@@ -92,6 +92,7 @@ public class Enemy : MonoBehaviour
             if (_animator != null && this != null)
                 _animator.Play("enemy_attack");
             yield return new WaitForSeconds(0.2f);
+            Sound.instance.Play("enemy_attack");
             EZCameraShake.CameraShaker.Instance.Shake(EZCameraShake.CameraShakePresets.Bump);
             TakeReturnDamage();
             yield return new WaitForSeconds(atakSpeed);
@@ -110,6 +111,7 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage()
     {
+        Sound.instance.Play("enemy_damaged");
         var dmg = player.atk;
         var incomingDmg = dmg - def;
         if (incomingDmg > 0)
@@ -124,6 +126,7 @@ public class Enemy : MonoBehaviour
 
         if (currentSpeed != 0)
             currentSpeed = Mathf.Clamp(currentSpeed * (currentHealth / maxHealth), baseSpeed / 2, baseSpeed);
+
     }
 
     public void TakeReturnDamage()
