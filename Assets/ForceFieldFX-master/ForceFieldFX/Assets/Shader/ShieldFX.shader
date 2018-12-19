@@ -10,6 +10,7 @@ Shader "Unlit/ShieldFX"
 		_IntersectionThreshold("Highlight of intersection threshold", range(0,1)) = .1 //Max difference for intersections
 		_ScrollSpeedU("Scroll U Speed",float) = 2
 		_ScrollSpeedV("Scroll V Speed",float) = 0
+		_MY("MY",float) = 0
 		//[ToggleOff]_CullOff("Cull Front Side Intersection",float) = 1
 	}
 	SubShader
@@ -45,11 +46,12 @@ Shader "Unlit/ShieldFX"
 
 			sampler2D _MainTex, _CameraDepthTexture, _GrabTexture;
 			fixed4 _MainTex_ST,_MainColor,_GrabTexture_ST, _GrabTexture_TexelSize;
-			fixed _Fresnel, _FresnelWidth, _Distort, _IntersectionThreshold, _ScrollSpeedU, _ScrollSpeedV;
+			fixed _Fresnel, _FresnelWidth, _Distort, _IntersectionThreshold, _ScrollSpeedU, _ScrollSpeedV, _MY;
 
 			v2f vert (appdata v)
 			{
 				v2f o;
+				//Valor alto aqui da um efeito dahora ! (dentro é o tamanho da esfera)
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 
@@ -58,20 +60,27 @@ Shader "Unlit/ShieldFX"
 				o.uv.y += _Time * _ScrollSpeedV;
 
 				//fresnel 
+				//opacidade tbm
 				fixed3 viewDir = normalize(ObjSpaceViewDir(v.vertex));
+				
+				//Algo como opacidade ?
 				fixed dotProduct = 1 - saturate(dot(v.normal, viewDir));
 				o.rimColor = smoothstep(1 - _FresnelWidth, 1.0, dotProduct) * .5f;
-				o.screenPos = ComputeScreenPos(o.vertex);
-				COMPUTE_EYEDEPTH(o.screenPos.z);//eye space depth of the vertex 
+				//esse é o quanto distorce, o quanto as particulas se separam com * e onde estao com -
+				o.screenPos = ComputeScreenPos(-o.vertex);
+				COMPUTE_EYEDEPTH(o.screenPos.z);//eye space depth of the vertex */
 				return o;
 			}
 			
 			fixed4 frag (v2f i,fixed face : VFACE) : SV_Target
 			{
 				//intersection
+				//Cor ?
 				fixed intersect = saturate((abs(LinearEyeDepth(tex2Dproj(_CameraDepthTexture,i.screenPos).r) - i.screenPos.z)) / _IntersectionThreshold);
 
+				//Nao é aqui tbm
 				fixed3 main = tex2D(_MainTex, i.uv);
+
 				//distortion
 				i.screenPos.xy += (main.rg * 2 - 1) * _Distort * _GrabTexture_TexelSize.xy;
 				fixed3 distortColor = tex2Dproj(_GrabTexture, i.screenPos);

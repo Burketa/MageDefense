@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public static Player instance;
     public int baseCost = 10;
 
     public int cost;
@@ -35,6 +36,12 @@ public class Player : MonoBehaviour
     public GameObject enemiesText;
 
     public Material shieldMaterial;
+    public float asd;
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     private void Start()
     {
@@ -44,12 +51,15 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        shieldMaterial.SetFloat("_MY", asd);
+
         var shield = transform.GetChild(0);
         float val = (float)currentHealth / (float)maxHealth;
         if (val <= 0)
-            SceneManager.LoadScene(0);
+            Die();
 
-        var current = shieldMaterial.GetFloat("_FresnelWidth");
+        shieldMaterial.SetFloat("_Distort", Mathf.Clamp(val * 10, 0, 10));
+
         if (val < 0.5f)
         {
             shieldMaterial.SetFloat("_FresnelWidth", Mathf.Clamp(val * 3, 0.3f, 1));
@@ -58,6 +68,13 @@ public class Player : MonoBehaviour
         {
             shieldMaterial.SetFloat("_FresnelWidth", Mathf.Clamp(1 + val, 1, 2));
         }
+    }
+
+    public void Die()
+    {
+        SceneManager.LoadScene(0);
+        print(FindObjectOfType<Spawner>().spawned);
+        print(FindObjectOfType<Enemy>().atk);
     }
 
     public void TakeDamage(int incomingDmg)
@@ -80,8 +97,8 @@ public class Player : MonoBehaviour
 
     public void SpeedUpgrade()
     {
-        singleAtackSpeed *= 0.95f;
-        multipleAttackSpeed *= 0.95f;
+        singleAtackSpeed *= 0.90f;
+        multipleAttackSpeed *= 0.90f;
         AddSouls(-cost);
         AdjustCost();
     }
@@ -102,7 +119,7 @@ public class Player : MonoBehaviour
         currentHealth = Mathf.CeilToInt(currentHealth * val);
         //
         healAmmount++;
-        healSpeed *= 0.95f;
+        healSpeed *= 0.90f;
         AddSouls(-cost);
         AdjustCost();
     }
@@ -118,6 +135,6 @@ public class Player : MonoBehaviour
     public void AdjustCost()
     {
         costMultiplier++;
-        cost = Mathf.CeilToInt((baseCost + costMultiplier * 1.23f) * costMultiplier);
+        cost = Mathf.CeilToInt((baseCost + costMultiplier) * costMultiplier);
     }
 }

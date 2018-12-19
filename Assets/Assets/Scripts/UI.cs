@@ -4,37 +4,34 @@ using UnityEngine;
 using UnityEngine.UI;
 public class UI : MonoBehaviour
 {
+    public static UI instance;
+
+    [Header("Attack")]
     public Text atk;
-    public Text singleSpeed;
-    public Text multipleSpeed;
+    public Text atkCost, speedCost, singleSpeed, multipleSpeed;
+    public Button atkButton, speedButton;
 
+    [Header("Defense")]
     public Text def;
-
-    public Text heal;
-    public Text healSpeed;
-
-    public Button atkButton;
-    public Text atkCost;
-
-    public Button speedButton;
-    public Text speedCost;
-
-    public Button defButton;
     public Text defCost;
+    public Button defButton;
 
+    [Header("Heal")]
+    public Text heal;
+    public Text healSpeed, healCost;
     public Button healButton;
-    public Text healCost;
 
+    [Header("Healthbar")]
     public Slider playerHealthbar;
-
     public GameObject enemyHealthbarPrefab;
-
     public Transform enemyHealthbarParent;
-
     public Vector2 enemyHealthbarOffset;
 
-    private Player player;
+    [Header("Misc")]
+    public Button areaAttackButton;
 
+    //Private Variables
+    private Player player;
     private Button[] allButtons;
     private Text[] allCosts;
 
@@ -45,6 +42,8 @@ public class UI : MonoBehaviour
         allButtons = new Button[] { atkButton, speedButton, defButton, healButton };
 
         allCosts = new Text[] { atkCost, speedCost, defCost, healCost };
+
+        instance = this;
     }
 
     void Update()
@@ -129,5 +128,10 @@ public class UI : MonoBehaviour
         }
         Destroy(healthbar);
         yield return null;
+    }
+
+    public void EnableAreaAttack()
+    {
+        areaAttackButton.interactable = true;
     }
 }

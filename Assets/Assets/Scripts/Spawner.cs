@@ -15,7 +15,7 @@ public class Spawner : MonoBehaviour
     private int multiplier = 1;
 
     [SerializeField]
-    private int spawned = 0;
+    public int spawned = 0;
 
     private float currentSpawnTime;
 
@@ -54,10 +54,21 @@ public class Spawner : MonoBehaviour
     {
         if (spawned > Random.Range(8, 12) * multiplier)
             multiplier++;
-        enemy.atk *= Mathf.FloorToInt(multiplier * 0.5f);
-        enemy.def *= Mathf.FloorToInt(multiplier * 0.5f);
-        enemy.maxHealth *= Mathf.FloorToInt(multiplier * 0.5f);
-        enemy.maxHealth = Mathf.Clamp(enemy.maxHealth, 1, enemy.maxHealth);
-        enemy.currentHealth = enemy.maxHealth;
+        if (Random.value < 0.3f)
+        {
+            enemy.atk *= Mathf.FloorToInt(multiplier * 0.5f);
+            enemy.def *= Mathf.FloorToInt(multiplier * 0.5f);
+            enemy.maxHealth *= Mathf.FloorToInt(multiplier * 0.5f);
+            enemy.maxHealth = Mathf.Clamp(enemy.maxHealth, 1, enemy.maxHealth);
+            enemy.currentHealth = enemy.maxHealth;
+        }
+        else
+        {
+            enemy.atk *= Mathf.FloorToInt(multiplier * 0.3f);
+            enemy.def *= Mathf.FloorToInt(multiplier * 0.3f);
+            enemy.maxHealth *= Mathf.FloorToInt(multiplier * 0.1f);
+            enemy.maxHealth = Mathf.Clamp(enemy.maxHealth, 1, enemy.maxHealth);
+            enemy.currentHealth = enemy.maxHealth;
+        }
     }
 }

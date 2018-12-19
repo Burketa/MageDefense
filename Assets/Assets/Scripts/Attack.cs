@@ -9,13 +9,15 @@ public class Attack : MonoBehaviour
     public bool canDamageSingle, canDamageAll;
     private Player player;
     private float currentSingleAtackTime;
-    private float currentAllAtackTime;
+    public float currentAllAtackTime;
     private Enemy currentTarget = null;
     public GameObject buttons;
+    public Animator _animator;
+    public Transform castPoint;
 
     void Start()
     {
-        player = FindObjectOfType<Player>();
+        player = Player.instance;
         currentSingleAtackTime = player.singleAtackSpeed;
         currentAllAtackTime = 0;
     }
@@ -24,8 +26,20 @@ public class Attack : MonoBehaviour
     {
         if (canDamageSingle)
             DamageVisibleEnemy();
+        //if (canDamageAll)
+        //DamageAllVisibleEnemies();
         if (canDamageAll)
-            DamageAllVisibleEnemies();
+        {
+            if (currentAllAtackTime >= player.multipleAttackSpeed)
+            {
+                EnableAreaAttackButton();
+                currentAllAtackTime = 0;
+            }
+            else
+            {
+                currentAllAtackTime += Time.deltaTime;
+            }
+        }
     }
 
     public void OnMouseDown()
@@ -48,7 +62,7 @@ public class Attack : MonoBehaviour
             if (currentTarget != null)
             {
                 //Shot(currentTarget);
-                GetComponent<Animator>().SetTrigger("attack");
+                _animator.SetTrigger("attack");
             }
             currentSingleAtackTime = 0;
         }
@@ -84,7 +98,7 @@ public class Attack : MonoBehaviour
     public Enemy ChooseTarget(List<Enemy> enemies)
     {
         //Quanto dano o player da ?
-        var dmg = FindObjectOfType<Player>().atk;
+        var dmg = player.atk;
 
         //Se esse for o primeiro tiro...
         if (projectilesParent.childCount == 1)
@@ -152,7 +166,7 @@ public class Attack : MonoBehaviour
 
     public void Shot()//(Enemy enemy)
     {
-        var shot = Instantiate(projectile, transform.GetChild(0).position, transform.rotation, projectilesParent).GetComponent<Projectile>();
+        var shot = Instantiate(projectile, castPoint.position, transform.rotation, projectilesParent).GetComponent<Projectile>();
         shot.StartCoroutine(shot.ToEnemy(currentTarget));
     }
 
@@ -168,5 +182,15 @@ public class Attack : MonoBehaviour
             currentAllAtackTime += Time.deltaTime;
         }
 
+    }
+    public void DamageAllVisibleEnemiesButton()
+    {
+        GameObject.Find("fall").GetComponent<Animation>().Play("fall");
+        currentAllAtackTime = 0;
+    }
+
+    public void EnableAreaAttackButton()
+    {
+        UI.instance.EnableAreaAttack();
     }
 }

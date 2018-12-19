@@ -30,7 +30,7 @@ public class Enemy : MonoBehaviour
 
     private Animator _animator;
 
-    private bool isAlive = true;
+    private Player player;
 
     private void Awake()
     {
@@ -44,39 +44,48 @@ public class Enemy : MonoBehaviour
     {
         currentHealth = maxHealth;
         currentSpeed = baseSpeed;
+        player = Player.instance;
     }
 
     void Update()
     {
         transform.Translate(Vector2.left * Time.deltaTime * currentSpeed);
-        if (currentHealth <= 0 && isAlive)
+        if (currentHealth <= 0)
+            Die();
+    }
+
+    //      10/10
+    public void OnTriggerEnter2D(Collider2D collider)
+    {
+        switch (collider.tag)
         {
-            isAlive = false;
-            enemyParticleSystem.transform.position = transform.position;
-            enemyParticleSystem.Play();
-            FindObjectOfType<Player>().AddSouls(maxHealth * 2);
-            _animator.SetBool("dead", true);
-            Destroy(gameObject);
+            case "AreaAttack":
+                TakeDamage();
+                break;
+
+            case "Shield":
+                currentSpeed = 0;
+                isPriority = true;
+                StartCoroutine(DoDamage());
+                break;
+
+            default:
+                break;
         }
     }
 
-    public void OnCollisionEnter2D(Collision2D collision)
+    public void Die()
     {
-        var colliderTag = collision.collider.tag;
-        if (colliderTag.Equals("AreaAttack"))
-            TakeDamage();
-        if (colliderTag.Equals("Shield"))
-        {
-            currentSpeed = 0;
-            isPriority = true;
-            StartCoroutine(DoDamage());
-        }
+        enemyParticleSystem.transform.position = transform.position;
+        enemyParticleSystem.Play();
+        Player.instance.AddSouls(maxHealth * 2);
+        _animator.SetBool("dead", true);
+        Destroy(gameObject);
     }
 
     //TODO: metodo para dar dano na barreira, na barreira !.
     public IEnumerator DoDamage()
     {
-        var player = FindObjectOfType<Player>();
         while (currentHealth > 0)
         {
             player.TakeDamage(atk);
@@ -101,7 +110,7 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage()
     {
-        var dmg = FindObjectOfType<Player>().atk;
+        var dmg = player.atk;
         var incomingDmg = dmg - def;
         if (incomingDmg > 0)
             currentHealth -= incomingDmg;
